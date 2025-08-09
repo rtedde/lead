@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Link WhatsApp com opções adicionais</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      text-align: center;
+    }
+    textarea {
+      width: 100%;
+      max-width: 400px;
+      height: 120px;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: green;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .opcoes {
+      margin: 10px auto;
+      text-align: left;
+      max-width: 400px;
+    }
+    #linkResultado {
+      margin-top: 20px;
+      font-size: 18px;
+      color: blue;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <h2>Gerador de Link WhatsApp com personalização</h2>
+
+  <textarea id="dadosLead" placeholder="Cole aqui: Nome, Telefone e Demanda (um por linha)"></textarea>
+
+  <div class="opcoes">
+    <input type="checkbox" id="opcao1"> 
+    <label for="opcao1">Perdão a demora em te chamar, estava em aula, mas agora estou disponível para te ajudar.</label><br>
+
+    <input type="checkbox" id="opcao2"> 
+    <label for="opcao2">Perdão a demora em te retornar, estávamos finalizando uma leva de trabalhos para entregar essa semana e eu fiquei auxiliando na confecção de slides, mas agora estamos com a agenda aberta, inclusive para prazos urgentes.</label><br>
+
+    <input type="checkbox" id="opcao3"> 
+    <label for="opcao3">Você poderia me enviar seu trabalho já iniciado para eu entender seu tema e os objetivos?</label>
+  </div>
+
+  <button onclick="gerarLink()">Gerar Link</button>
+
+  <p id="linkResultado"></p>
+
+  <script>
+    function gerarLink() {
+      const texto = document.getElementById("dadosLead").value.trim();
+      const linhas = texto.split("\n");
+
+      if (linhas.length < 2) {
+        alert("Por favor, cole no mínimo nome e telefone em linhas separadas.");
+        return;
+      }
+
+      const nome = linhas[0].trim();
+      const telefone = linhas[1].replace(/\D/g, '');
+      const demanda = linhas.slice(2).join(' ').trim();
+
+      const saudacao = definirSaudacao();
+
+      let mensagem = `Olá ${nome}, ${saudacao}! Meu nome é Bianca, da Orientando Consultoria Acadêmica. Você deixou seu contato em nosso site. Como posso te ajudar?\n\n`;
+
+      if (demanda) {
+        mensagem += `*Conforme sua mensagem você precisa de ajuda com seu ${demanda}.*\n\n`;
+      }
+
+      // Checagem das opções adicionais
+      const opcoesExtras = [];
+
+      if (document.getElementById("opcao1").checked) {
+        opcoesExtras.push("Perdão a demora em te chamar, estava em aula, mas agora estou disponível para te ajudar.");
+      }
+
+      if (document.getElementById("opcao2").checked) {
+        opcoesExtras.push("Perdão a demora em te retornar, estávamos finalizando uma leva de trabalhos para entregar essa semana e eu fiquei auxiliando na confecção de slides, mas agora estamos com a agenda aberta, inclusive para prazos urgentes.");
+      }
+
+      if (document.getElementById("opcao3").checked) {
+        opcoesExtras.push("Você poderia me enviar seu trabalho já iniciado para eu entender seu tema e os objetivos?");
+      }
+
+      if (opcoesExtras.length > 0) {
+        mensagem += opcoesExtras.join("\n\n") + "\n\n";
+      }
+
+      mensagem += "Quando precisa entregar?\n\nhttps://www.orientandotcc.com/depoimentos";
+
+      const mensagemCodificada = encodeURIComponent(mensagem);
+      const linkWhatsApp = `https://api.whatsapp.com/send/?phone=55${telefone}&text=${mensagemCodificada}&type=phone_number&app_absent=0`;
+
+      document.getElementById("linkResultado").innerHTML = `<a href="${linkWhatsApp}" target="_blank">Clique aqui para abrir no WhatsApp</a>`;
+    }
+
+    function definirSaudacao() {
+      const horaAtual = new Date().getHours();
+      if (horaAtual >= 5 && horaAtual < 12) return "bom dia";
+      if (horaAtual >= 12 && horaAtual < 18) return "boa tarde";
+      return "boa noite";
+    }
+  </script>
+</body>
+</html>
